@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const user = authenticatedRequest.user;
 
     const context = getRequestContext();
-    const { BUCKET } = context.env;
+    const { BUCKET, PUBLIC_R2_URL } = context.env;
 
     // List only user's images
     const options = {
@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
             size: object.size,
             uploaded: object.uploaded,
             metadata: metadata?.customMetadata || {},
+            publicURL: `${PUBLIC_R2_URL}/${object.key}`,
           };
         } catch (error) {
           // If metadata fetch fails, return basic info

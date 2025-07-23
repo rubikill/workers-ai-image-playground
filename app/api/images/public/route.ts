@@ -6,7 +6,7 @@ export const runtime = "edge";
 export async function GET(request: NextRequest) {
   try {
     const context = getRequestContext();
-    const { BUCKET } = context.env;
+    const { BUCKET, PUBLIC_R2_URL } = context.env;
 
     // List all objects in the bucket
     const objects = await BUCKET.list();
@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
               key: obj.key,
               uploaded: obj.uploaded.toISOString(),
               metadata: metadata?.customMetadata || {},
+              publicURL: `${PUBLIC_R2_URL}/${obj.key}`,
             };
           } catch (error) {
             console.error(`Error getting metadata for ${obj.key}:`, error);

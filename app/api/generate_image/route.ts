@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const user = authenticatedRequest.user;
 
     const context = getRequestContext();
-    const { AI, BUCKET, AI_GATEWAY_ID } = context.env;
+    const { AI, BUCKET, AI_GATEWAY_ID, PUBLIC_R2_URL } = context.env;
     let { prompt, model } = await request.json<{
       prompt: string;
       model: string;
@@ -46,11 +46,16 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return new Response(`data:image/png;base64,${response.image}`, {
-      headers: {
-        "Content-Type": "image/png",
-      },
-    });
+    return new Response(
+      JSON.stringify({
+        url: `${PUBLIC_R2_URL}/${fileName}`,
+      }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   } catch (error: any) {
     console.log(error);
     return new Response(error.message, { status: 500 });

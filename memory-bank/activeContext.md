@@ -14,18 +14,41 @@
 
 ## Recent Changes
 
-### Codebase Analysis (Current Session)
+### Schema-Based Response Handling Fix (Current Session)
+- **Model Schema Integration**: Updated `processResponse` to use actual model schema output formats
+- **Response Format Validation**: Added proper validation for JSON vs binary responses based on schema
+- **Enhanced Logging**: Added comprehensive logging for debugging response formats
+- **Error Handling**: Improved error messages with specific format expectations
+- **Backend Response Fix**: Fixed "Cannot stringify arbitrary non-POJOs" error in `/api/generate_image/route.ts`
+- **Response Handling**: Properly handle response body reading to avoid double-consumption issues
+- **File Upload Support**: Added comprehensive file upload functionality to `ImageGenerator.tsx`
+- **Drag-and-Drop Interface**: Beautiful drag-and-drop area for image uploads
+- **Image Preview**: Real-time preview of uploaded images with remove functionality
+- **Model Detection**: Automatic detection of img2img models and conditional UI
+- **Enhanced Validation**: Form validation now includes image upload requirements
+- **Base64 Conversion**: Automatic conversion of uploaded images to base64 for API
+
+### Major API Enhancement (Previous Session)
+- **Enhanced generate_image Route**: Completely rewrote `/api/generate_image/route.ts` to support multiple model types
+- **Dynamic Schema Validation**: Added schema-based input validation for all models
+- **Multi-Model Support**: Now supports both text-to-image and image-to-image models
+- **Enhanced Error Handling**: Comprehensive error handling with model-specific messages
+- **Response Processing**: Handles different response formats (JSON vs binary) based on model type
+
+### Codebase Analysis (Previous Session)
 - **Explored Project Structure**: Analyzed Next.js app router structure
 - **Component Analysis**: Reviewed ImageGenerator and ImageListing components
 - **API Route Review**: Examined Cloudflare Workers AI integration
 - **Configuration Analysis**: Reviewed wrangler.toml and package.json
 
 ### Key Discoveries
-1. **Single Model Implementation**: Currently only supports flux-1-schnell model
-2. **Dynamic Schema System**: Sophisticated form generation based on model schemas
-3. **R2 Storage Integration**: Images stored in Cloudflare R2 with metadata
-4. **Modern UI Design**: Beautiful gradient-based design with Tailwind CSS
-5. **Edge Runtime**: Full edge deployment with Cloudflare Pages
+1. **Complete Multi-Model Support**: Now supports flux-1-schnell (text-to-image) and stable-diffusion-v1-5-img2img (image-to-image) with full UI integration
+2. **Schema-Based Response Handling**: Proper handling of different response formats (JSON vs binary) based on actual model schemas
+3. **Dynamic Schema System**: Sophisticated form generation based on model schemas with validation and conditional UI
+4. **File Upload Integration**: Seamless drag-and-drop file upload with preview and validation
+5. **R2 Storage Integration**: Images stored in Cloudflare R2 with enhanced metadata
+6. **Modern UI Design**: Beautiful gradient-based design with Tailwind CSS and responsive interactions
+7. **Edge Runtime**: Full edge deployment with Cloudflare Pages
 
 ## Active Decisions
 
@@ -95,10 +118,10 @@
 ## Current Challenges
 
 ### Technical Challenges
-1. **Model Limitations**: Currently only supports one AI model
-2. **Performance**: Image generation can take 10-30 seconds
-3. **Storage Costs**: R2 storage costs for image retention
-4. **Edge Limitations**: Memory and execution time constraints
+1. **Performance**: Image generation can take 10-30 seconds
+2. **Storage Costs**: R2 storage costs for image retention
+3. **Edge Limitations**: Memory and execution time constraints
+4. **File Size Limits**: Need to handle large image uploads efficiently
 
 ### Development Challenges
 1. **Documentation**: Need comprehensive documentation for future development

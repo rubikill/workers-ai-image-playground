@@ -7,16 +7,16 @@ export async function GET(_request: Request) {
     //   id: "@cf/lykon/dreamshaper-8-lcm"
     // },
     {
-      name: "flux-1-schnell",
+      name: "Text to Image",
       id: "@cf/black-forest-labs/flux-1-schnell",
       // },
       // {
       //   name: "qwen1.5-0.5b-chat",
       //   id: "@cf/qwen/qwen1.5-0.5b-chat"
-      // },
-      // {
-      //   name: "stable-diffusion-v1-5-img2img",
-      //   id: "@cf/runwayml/stable-diffusion-v1-5-img2img"
+    },
+    {
+      name: "Image to Image",
+      id: "@cf/runwayml/stable-diffusion-v1-5-img2img",
       // },
       // {
       //   name: "stable-diffusion-v1-5-inpainting",

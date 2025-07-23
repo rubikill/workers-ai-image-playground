@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Footer } from "@/components/ui/footer";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -25,6 +26,7 @@ import {
 type R2Image = {
   key: string;
   uploaded: string;
+  publicURL: string;
   metadata?: {
     prompt?: string;
     model?: string;
@@ -34,7 +36,7 @@ type R2Image = {
 };
 
 const imageLoader = ({ src }: { src: string }) => {
-  return `/api/image?key=${src}`;
+  return src;
 };
 
 export default function ImageListing() {
@@ -283,10 +285,10 @@ export default function ImageListing() {
                     <div className="relative">
                       <Image
                         loader={imageLoader}
-                        src={image.key}
+                        src={image.publicURL}
                         width={400}
                         height={400}
-                        alt={image.key}
+                        alt={image.publicURL}
                         className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-200"
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center gap-2">
@@ -397,25 +399,7 @@ export default function ImageListing() {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-12 text-sm text-gray-500">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://developers.cloudflare.com/workers-ai"
-              className="text-blue-600 hover:underline"
-            >
-              Cloudflare Workers AI
-            </a>
-            . Source code available on{" "}
-            <a
-              href="https://github.com/kristianfreeman/workers-ai-image-playground"
-              className="text-blue-600 hover:underline"
-            >
-              GitHub
-            </a>
-            .
-          </p>
-        </div>
+        <Footer variant="minimal" className="mt-12" />
       </div>
 
       {/* Prompt Popup */}
@@ -490,10 +474,10 @@ export default function ImageListing() {
             <div className="relative">
               <Image
                 loader={imageLoader}
-                src={selectedImage.key}
+                src={selectedImage.publicURL}
                 width={800}
                 height={800}
-                alt={selectedImage.key}
+                alt={selectedImage.publicURL}
                 className="w-full h-auto"
               />
               <div className="absolute top-4 right-4 flex gap-2">
