@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const user = authenticatedRequest.user;
 
     const context = getRequestContext();
-    const { AI, BUCKET } = context.env;
+    const { AI, BUCKET, AI_GATEWAY_ID } = context.env;
     let { prompt, model } = await request.json<{
       prompt: string;
       model: string;
@@ -22,12 +22,17 @@ export async function POST(request: NextRequest) {
     if (!model) model = "@cf/black-forest-labs/flux-1-schnell";
 
     const inputs = { prompt };
-    const response = await AI.run(model, inputs);
+    const response = await AI.run(model, inputs, {
+      gateway: {
+        id: AI_GATEWAY_ID,
+        skipCache: true,
+      },
+    });
 
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 15);
     // Store images in user-specific folders
-    const fileName = `${user.email}/${timestamp}-${randomId}.jpeg`;
+    const fileName = `${user.email}/${timestamp}-${randomId}.png`;
     const binaryString = atob(response.image);
 
     // @ts-ignore
@@ -41,9 +46,9 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return new Response(`data:image/jpeg;base64,${response.image}`, {
+    return new Response(`data:image/png;base64,${response.image}`, {
       headers: {
-        "Content-Type": "image/jpeg",
+        "Content-Type": "image/png",
       },
     });
   } catch (error: any) {
