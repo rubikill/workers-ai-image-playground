@@ -37,7 +37,9 @@ type Schema = {
 
 export default function SimpleImageGenerator() {
   const [models, setModels] = useState<Model[]>([]);
-  const [selectedModel, setSelectedModel] = useState<string>("");
+  const [selectedModel, setSelectedModel] = useState<string>(
+    "@cf/black-forest-labs/flux-1-schnell"
+  );
   const [schema, setSchema] = useState<Schema | null>(null);
   const [inputValues, setInputValues] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -167,7 +169,7 @@ export default function SimpleImageGenerator() {
                 htmlFor="model"
                 className="block text-sm font-semibold text-gray-700 mb-2"
               >
-                AI Model
+                AI Model.
               </label>
               <Select onValueChange={setSelectedModel} value={selectedModel}>
                 <SelectTrigger id="model" className="h-12 text-base">

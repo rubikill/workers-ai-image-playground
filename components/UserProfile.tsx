@@ -26,7 +26,7 @@ export function UserProfile() {
         {user.picture ? (
           <img
             src={user.picture}
-            alt={user.name}
+            alt={user.email}
             className="w-8 h-8 rounded-full"
           />
         ) : (
@@ -35,7 +35,7 @@ export function UserProfile() {
           </div>
         )}
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          {user.name}
+          {user.email}
         </span>
       </div>
       <Button

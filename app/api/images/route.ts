@@ -1,22 +1,22 @@
-import { getRequestContext } from '@cloudflare/next-on-pages'
-import { requireAuth } from '@/lib/api-auth'
-import type { NextRequest } from 'next/server'
+import { getRequestContext } from "@cloudflare/next-on-pages";
+import { requireAuth } from "@/lib/api-auth";
+import type { NextRequest } from "next/server";
 
-export const runtime = 'edge'
+export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
   try {
-    const authenticatedRequest = requireAuth(request)
-    const user = authenticatedRequest.user
+    const authenticatedRequest = requireAuth(request);
+    const user = authenticatedRequest.user;
 
-    const context = getRequestContext()
-    const { BUCKET } = context.env
+    const context = getRequestContext();
+    const { BUCKET } = context.env;
 
     // List only user's images
     const options = {
       limit: 500,
-      prefix: `${user.id}/`
-    }
+      prefix: `${user.email}/`,
+    };
 
     const listed = await BUCKET.list(options);
     let truncated = listed.truncated;
@@ -32,39 +32,39 @@ export async function GET(request: NextRequest) {
 
       truncated = next.truncated;
       // @ts-ignore
-      cursor = next.cursor
+      cursor = next.cursor;
     }
 
     // Get metadata for each image
     const images = await Promise.all(
       listed.objects.map(async (object) => {
         try {
-          const metadata = await BUCKET.head(object.key)
+          const metadata = await BUCKET.head(object.key);
           return {
             key: object.key,
             size: object.size,
             uploaded: object.uploaded,
-            metadata: metadata?.customMetadata || {}
-          }
+            metadata: metadata?.customMetadata || {},
+          };
         } catch (error) {
           // If metadata fetch fails, return basic info
           return {
             key: object.key,
             size: object.size,
             uploaded: object.uploaded,
-            metadata: {}
-          }
+            metadata: {},
+          };
         }
       })
-    )
+    );
 
     return new Response(JSON.stringify(images), {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-    })
+    });
   } catch (error: any) {
-    console.log(error)
-    return new Response(error.message, { status: 500 })
+    console.log(error);
+    return new Response(error.message, { status: 500 });
   }
 }

@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     const context = getRequestContext();
     const { AI, BUCKET } = context.env;
-    let { prompt, model } = await authenticatedRequest.json<{
+    let { prompt, model } = await request.json<{
       prompt: string;
       model: string;
     }>();
@@ -27,14 +27,13 @@ export async function POST(request: NextRequest) {
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 15);
     // Store images in user-specific folders
-    const fileName = `${user.id}/${timestamp}-${randomId}.jpeg`;
+    const fileName = `${user.email}/${timestamp}-${randomId}.jpeg`;
     const binaryString = atob(response.image);
 
     // @ts-ignore
     const img = Uint8Array.from(binaryString, (m) => m.codePointAt(0));
     await BUCKET.put(fileName, img, {
       customMetadata: {
-        userId: user.id,
         userEmail: user.email,
         generatedAt: timestamp.toString(),
         prompt: prompt,

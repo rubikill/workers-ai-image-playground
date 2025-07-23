@@ -2,6 +2,7 @@
 
 import { useUser } from "./UserContext";
 import SimpleImageGenerator from "./ImageGenerator";
+import { isLocalTestingMode } from "@/lib/auth";
 
 export default function AuthenticatedImageGenerator() {
   const { user, loading } = useUser();
@@ -43,5 +44,14 @@ export default function AuthenticatedImageGenerator() {
   }
 
   // Show the image generator for authenticated users
-  return <SimpleImageGenerator />;
+  return (
+    <div>
+      {isLocalTestingMode() && (
+        <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-2 rounded mb-4 text-center">
+          🧪 <strong>Local Testing Mode</strong> - Using hardcoded authentication token
+        </div>
+      )}
+      <SimpleImageGenerator />
+    </div>
+  );
 }

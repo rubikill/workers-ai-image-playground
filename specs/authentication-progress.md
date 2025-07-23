@@ -7,18 +7,21 @@
   - Created browser-compatible JWT decoder
   - Implemented token validation with expiration check
   - Added user data parsing utilities
+  - Added local testing mode support with hardcoded token
 
 - [x] **Authentication Middleware** (`middleware.ts`)
   - Created middleware for route protection
   - Implemented JWT validation for all protected routes
   - Added user info injection into request headers
   - Configured proper route matching
+  - Added local testing mode bypass for development
 
 - [x] **User Context Provider** (`components/UserContext.tsx`)
   - Created React context for user state management
   - Implemented client-side authentication checking
   - Added logout functionality with cookie cleanup
   - Integrated with Cloudflare Access logout flow
+  - Added local testing mode support with hardcoded user
 
 - [x] **User Profile Component** (`components/UserProfile.tsx`)
   - Created user profile display component
@@ -31,6 +34,7 @@
   - Created `requireAuth` function for API routes
   - Implemented `getAuthenticatedUser` utility
   - Added proper TypeScript interfaces
+  - Added local testing mode support for API routes
 
 - [x] **Protected Image Generation Route** (`app/api/generate_image/route.ts`)
   - Added authentication requirement
@@ -55,6 +59,7 @@
   - Added loading states for auth checking
   - Implemented login prompt for unauthenticated users
   - Integrated with existing ImageGenerator component
+  - Added local testing mode indicator
 
 - [x] **Main Page Updates** (`app/page.tsx`)
   - Updated to use authenticated version
@@ -68,12 +73,14 @@
 3. **User-Specific Storage**: Images are stored in user-specific folders
 4. **Logout Functionality**: Proper cookie cleanup and Cloudflare Access logout
 5. **UI Integration**: Seamless authentication UI with loading states
+6. **Local Testing Mode**: Hardcoded token support for development testing
 
 ### Technical Implementation
 - **JWT Decoding**: Browser-compatible JWT decoder without Node.js dependencies
 - **Cookie Management**: Proper handling of Cloudflare Access cookies
 - **Error Handling**: Graceful error handling for authentication failures
 - **TypeScript**: Full type safety throughout the authentication system
+- **Local Testing**: Environment-based local testing mode with hardcoded user data
 
 ## 🚀 Next Steps
 
@@ -95,22 +102,25 @@
 - None (used browser-compatible JWT decoding)
 
 ### Files Created/Modified
-- `lib/auth.ts` - JWT validation utilities
-- `lib/api-auth.ts` - API authentication helpers
-- `middleware.ts` - Authentication middleware
-- `components/UserContext.tsx` - User context provider
+- `lib/auth.ts` - JWT validation utilities with local testing support
+- `lib/api-auth.ts` - API authentication helpers with local testing
+- `middleware.ts` - Authentication middleware with local testing bypass
+- `components/UserContext.tsx` - User context provider with local testing
 - `components/UserProfile.tsx` - User profile component
-- `components/AuthenticatedImageGenerator.tsx` - Auth wrapper
+- `components/AuthenticatedImageGenerator.tsx` - Auth wrapper with testing indicator
 - `app/layout.tsx` - Updated layout with auth
 - `app/page.tsx` - Updated main page
 - `app/api/generate_image/route.ts` - Protected image generation
 - `app/api/images/route.ts` - Protected image listing
+- `env.example` - Environment configuration example
+- `specs/local-testing-setup.md` - Local testing documentation
 
 ### Key Technical Decisions
 1. **Browser-Compatible JWT**: Used custom JWT decoder instead of Node.js library
 2. **Cookie-Based Auth**: Leveraged Cloudflare Access cookies for authentication
 3. **User-Specific Storage**: Organized images by user ID in R2
 4. **Graceful Degradation**: Proper error handling for auth failures
+5. **Local Testing Mode**: Environment-based testing with hardcoded user data
 
 ## 🎯 Success Metrics
 
