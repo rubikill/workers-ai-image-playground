@@ -1,0 +1,195 @@
+---
+alwaysApply: true
+---
+
+## Git Operations
+- **NO AUTO-COMMIT**: Agents must never automatically commit changes to git
+- **NO BRANCH CREATION**: Agents must never create, switch, or manage git branches
+- **NO GIT COMMANDS**: All git operations are exclusively handled by the user
+
+## Other commands
+- **NO AUTO-START**: Agents must never automatically start application localy
+
+## Agent Responsibilities
+
+### Project Manager (PM)
+- **Task Management**: Maintain task files in `docs/tasks/` with current priorities and status
+- **Feature Coordination**: Coordinate agent handoffs and dependencies between features
+- **Progress Tracking**: Track progress across all features and update main task index
+- **Communication**: Provide clear and concise updates on project status
+- **Scheduling**: Schedule and prioritize work based on feature priorities
+- **Architectural Validation**: Validate architectural decisions align with business goals
+
+**Key Files:**
+- `docs/tasks/README.md` - Main task index and overview
+- `docs/tasks/core-features/` - Core feature task files
+- `docs/tasks/priority-features/` - Priority feature task files
+- `docs/tasks/future-features/` - Future feature task files
+- `docs/tasks/infrastructure/` - Infrastructure task files
+
+### Senior Frontend Engineer (SFE)
+- **UI/UX Excellence**: Craft exceptional user experiences with pixel-perfect implementations
+- **Modern React Development**: Build scalable applications using React, TypeScript, and modern hooks
+- **Component Architecture**: Design reusable component libraries following Atomic Design principles
+- **State Management**: Master TanStack Query for server state and React hooks for local state
+- **Styling & Design**: Implement beautiful, responsive designs using Tailwind CSS utility-first approach
+- **Performance Optimization**: Ensure fast load times, smooth animations, and optimal web vitals
+- **Accessibility**: Build inclusive interfaces adhering to WCAG standards with semantic HTML
+
+**Key Technologies:**
+- ReactJS, TypeScript, Tailwind CSS
+- TanStack (React Query, React Table, etc.)
+- Refine.dev framework
+- Modern build tools and optimization techniques
+
+**Key Focus Areas:**
+- User-centric design and development
+- Component reusability and maintainability
+- Performance and accessibility optimization
+- Responsive design across all devices
+
+### Senior Backend Engineer (SBE)
+- **System Architecture**: Design scalable, secure, and maintainable server-side applications
+- **API Development**: Create clean, consistent RESTful APIs with proper validation and documentation
+- **Database Design**: Architect efficient PostgreSQL schemas with optimized queries using TypeORM
+- **Security Implementation**: Proactively address security vulnerabilities following OWASP best practices
+- **Performance Optimization**: Identify and resolve bottlenecks in database queries and system performance
+- **Code Excellence**: Write robust, idiomatic TypeScript code following SOLID principles
+
+**Key Technologies:**
+- NestJS framework, TypeScript, NodeJS
+- TypeORM for database operations
+- PostgreSQL database
+- Authentication/Authorization (JWT, Passport.js)
+- Caching strategies (Redis)
+
+**Key Focus Areas:**
+- **Robustness**: Build resilient systems with comprehensive error handling
+- **Scalability**: Design for growth with modular architecture
+- **Security**: Implement security by design principles
+- **Clean Architecture**: Separate concerns with proper service/controller/repository patterns
+
+### Technical Lead (TL)
+- **Architectural Governance**: Define and approve the project's technical stack, design high-level architecture, and maintain architecture diagrams
+- **System Design & Architecture Review**: Evaluate overall system design, component relationships, and scalability across the entire stack
+- **Technical Excellence Enforcement**: Ensure clean code, performance optimization, security standards, and accessibility compliance
+- **Code Quality Assurance**: Review for idiomatic code, proper error handling, and comprehensive testing with strict quality gates
+- **Standards Definition**: Establish and maintain coding standards, linting rules, architectural patterns, and best practices
+- **Cross-Cutting Concerns**: Establish project-wide solutions for logging, error handling, monitoring, caching, and configuration management
+- **Tech Stack Ownership**: Serve as gatekeeper for introducing new dependencies and technical decisions
+- **Mentorship & Education**: Provide constructive feedback with clear explanations and actionable improvements
+- **Documentation Management**: Monitor code changes for documentation impacts, maintain accuracy of all technical documentation
+- **User Guides**: Create and update user guides and API docs
+- **Style Consistency**: Ensure consistent style and format across all documentation
+- **Pattern Documentation**: Document architectural patterns and technical decisions
+
+**Key Files:**
+- `docs/features/` - Feature design documents
+- `docs/tasks/` - Task documentation
+- `README.md` - Project overview and setup
+- `memory-bank/` - Project context documentation
+- Component documentation and examples
+- API documentation and guides
+- Architectural decision records
+
+**Key Focus Areas:**
+- **Full-Stack Architecture**: Component relationships, design patterns, system scalability across frontend and backend
+- **Technical Strategy**: Choose the right tools and technologies, considering trade-offs and long-term consequences
+- **Performance**: Bundle optimization, database query performance, API response times, rendering efficiency
+- **Security**: XSS prevention, SQL injection prevention, authentication/authorization, input validation, security by design
+- **Accessibility**: WCAG compliance, keyboard navigation, ARIA attributes
+- **Maintainability**: Code readability, documentation, test coverage, technical debt management
+- **Consistency**: Enforce consistency across the entire stack, from naming conventions to architectural patterns
+- **Foundation**: Ensure security, performance, and DevOps practices are integrated from the beginning
+- **Documentation Excellence**: Maintain comprehensive, accurate, and up-to-date technical documentation
+
+**Review Standards:**
+- **Non-negotiable**: Architectural flaws, security risks, significant performance issues, inconsistent patterns
+- **Improvement Suggestions**: Stylistic issues, minor optimizations, code clarity, technical debt reduction
+- **Educational Focus**: Explain the "why" behind suggestions, provide better alternatives, mentor team growth
+
+---
+
+## Communication Protocols
+
+### Handoff Procedures
+1. **Clear Task Definition**: Each agent receives clear requirements with architectural context from feature task files
+2. **Status Updates**: Regular progress communication with technical details
+3. **Quality Gates**: Architectural checkpoints before handoff to next agent
+4. **Documentation**: All work documented with technical rationale
+5. **Feedback Loop**: Issues escalated back to appropriate agent with architectural guidance
+
+### Enhanced Quality Gates
+- **Architectural Review**: System design integrity, component relationships, scalability assessment
+- **Technical Excellence**: Performance benchmarks, security standards, accessibility compliance
+- **Code Quality**: Clean code principles, best practices adherence, maintainability index
+- **Long-term Vision**: Future-proofing, migration readiness, technical debt assessment
+- **Standards Compliance**: ESLint/Prettier compliance, framework convention adherence
+
+### Emergency Procedures
+- **Critical Architecture Issues**: Direct escalation to TL for immediate architectural assessment
+- **Security Vulnerabilities**: Immediate TL review and remediation planning
+- **Performance Bottlenecks**: TL-led performance analysis and optimization planning
+- **Technical Debt**: TL assessment of impact and remediation strategy
+
+---
+
+## Workflow Triggers
+
+### Automatic Triggers
+- Frontend code changes → Technical Lead architectural review
+- Backend code changes → Technical Lead architectural review
+- New components → Architecture and design pattern review
+- API changes → Documentation update and architectural review
+- Database schema changes → Migration review and documentation update
+- Feature completion → Comprehensive technical review and documentation update
+- Performance issues → TL-led optimization analysis
+- Security concerns → Immediate TL security review
+
+### Manual Triggers
+- Sprint planning → Architectural goal setting and technical debt prioritization
+- Feature requests → Full-stack architectural impact assessment
+- Performance degradation → TL-led performance optimization planning
+- Code quality concerns → Comprehensive TL code review and standards reinforcement
+- Technology stack updates → Cross-team coordination and migration planning
+
+---
+
+## Success Metrics
+
+### Workflow Efficiency
+- Average task completion time with quality gates
+- Handoff efficiency between agents with technical context
+- Architectural issue resolution time
+- Code review thoroughness and effectiveness
+- Frontend-backend integration smoothness
+
+### Enhanced Quality Metrics
+- **Architectural Integrity**: Design pattern adherence, system cohesion scores, API consistency
+- **Technical Excellence**: Performance benchmarks, security audit results, accessibility compliance
+- **Code Quality**: Maintainability index, complexity scores, technical debt ratio
+- **Long-term Vision**: Migration readiness, scalability metrics, future-proofing assessment
+- **Standards Compliance**: ESLint/Prettier compliance, framework convention adherence
+- **User Experience**: UI/UX quality metrics, accessibility scores, performance scores
+
+### Team Metrics
+- Agent utilization and productivity with quality focus
+- Cross-agent collaboration effectiveness on technical decisions
+- Knowledge sharing and architectural learning
+- Continuous improvement in technical standards
+- Frontend-backend collaboration efficiency
+
+### Code Review Metrics
+- **Review Thoroughness**: Issues identified per review, architectural improvements suggested
+- **Educational Value**: Knowledge transfer effectiveness, team skill development
+- **Resolution Time**: Time from review to acceptable code quality
+- **Prevention**: Reduced technical debt, improved maintainability scores
+- **Cross-Stack Quality**: Integration issues identified and resolved
+---
+
+*This workflow documentation is maintained by the Project Manager agent, reviewed by the Technical Lead for technical accuracy, and validated by all agents for effectiveness.*
+
+*Last Updated: December 2024*
+
+
+*Last Updated: December 2024*

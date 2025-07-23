@@ -1,5 +1,5 @@
-import ImageGenerator from "@/components/ImageGenerator";
+import AuthenticatedImageGenerator from "@/components/AuthenticatedImageGenerator";
 
 export default function Home() {
-  return <ImageGenerator />;
+  return <AuthenticatedImageGenerator />;
 }
