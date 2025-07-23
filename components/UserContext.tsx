@@ -1,12 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import {
-  validateCloudflareJWT,
-  parseCloudflareUser,
-  User,
-  isLocalTestingMode,
-} from "@/lib/auth";
+import { validateCloudflareJWT, parseCloudflareUser, User } from "@/lib/auth";
 
 interface UserContextType {
   user: User | null;
@@ -23,21 +18,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check for CF_Authorization cookie on client side
     const checkAuth = () => {
-      // Check for local testing mode first
-      if (isLocalTestingMode()) {
-        const testToken = process.env.NEXT_PUBLIC_LOCAL_TEST_TOKEN;
-        if (testToken) {
-          const cloudflareUser = validateCloudflareJWT(testToken);
-          if (cloudflareUser) {
-            setUser(parseCloudflareUser(cloudflareUser));
-          }
-
-          console.log("cloudflareUser: ", cloudflareUser);
-        }
-        setLoading(false);
-        return;
-      }
-
       const cookies = document.cookie.split(";");
       const authCookie = cookies.find((cookie) =>
         cookie.trim().startsWith("CF_Authorization=")
@@ -58,12 +38,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = () => {
-    // Handle local testing mode
-    if (isLocalTestingMode()) {
-      setUser(null);
-      return;
-    }
-
     // Clear CF_Authorization cookie
     document.cookie =
       "CF_Authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";

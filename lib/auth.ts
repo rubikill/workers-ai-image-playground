@@ -89,8 +89,3 @@ export function parseCloudflareUser(cloudflareUser: CloudflareUser): User {
     picture: cloudflareUser.picture,
   };
 }
-
-// Helper function to check if we're in local testing mode
-export function isLocalTestingMode(): boolean {
-  return !!process.env.NEXT_PUBLIC_LOCAL_TEST_TOKEN;
-}

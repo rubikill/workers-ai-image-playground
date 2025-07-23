@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import {
-  validateCloudflareJWT,
-  parseCloudflareUser,
-  isLocalTestingMode,
-} from "@/lib/auth";
+import { validateCloudflareJWT, parseCloudflareUser } from "@/lib/auth";
 
 export async function middleware(request: NextRequest) {
   // Skip auth for public routes and static assets
@@ -15,23 +11,6 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.includes(".")
   ) {
     return NextResponse.next();
-  }
-
-  console.log("isLocalTestingMode: ", isLocalTestingMode());
-
-  // Check for local testing mode
-  if (isLocalTestingMode()) {
-    // In local testing mode, allow all requests
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set("x-user-id", "local-test-user");
-    requestHeaders.set("x-user-email", "test@example.com");
-    requestHeaders.set("x-user-name", "Local Test User");
-
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
   }
 
   // Get CF_Authorization cookie
