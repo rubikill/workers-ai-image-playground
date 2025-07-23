@@ -130,16 +130,7 @@ export default function SimpleImageGenerator() {
             AI Image Generator
           </h1>
         </div>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Create stunning images with the power of{" "}
-          <a
-            href="https://developers.cloudflare.com/workers-ai"
-            className="text-blue-600 hover:text-blue-800 font-medium underline"
-          >
-            Cloudflare Workers AI
-          </a>
-          . Explore your creativity with state-of-the-art AI models.
-        </p>
+
         <div className="mt-4">
           <Link
             href="/images"
