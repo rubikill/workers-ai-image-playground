@@ -53,9 +53,9 @@ export async function GET(request: NextRequest) {
     );
 
     // Sort by upload date (newest first)
-    images.sort(
-      (a, b) => new Date(b.uploaded).getTime() - new Date(a.uploaded).getTime()
-    );
+    // images.sort(
+    //   (a, b) => new Date(b.uploaded).getTime() - new Date(a.uploaded).getTime()
+    // );
 
     // Return paginated response
     const response = {

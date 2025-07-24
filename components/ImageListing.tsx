@@ -117,25 +117,36 @@ export default function ImageListing() {
 
   const loadMoreImages = useCallback(
     async (tab: "my-gallery" | "public-gallery") => {
-      if (isLoadingMore) return;
+      if (isLoadingMore) {
+        console.log("Already loading more images, skipping...");
+        return;
+      }
 
+      const currentPagination =
+        tab === "my-gallery" ? privatePagination : publicPagination;
+
+      if (!currentPagination.hasMore || !currentPagination.nextCursor) {
+        console.log("No more images to load or no cursor available");
+        return;
+      }
+
+      console.log(
+        `Loading more images for ${tab} with cursor:`,
+        currentPagination.nextCursor
+      );
       setIsLoadingMore(true);
+
       try {
         const currentUrl = new URL(window.location.href);
-        const currentPagination =
-          tab === "my-gallery" ? privatePagination : publicPagination;
-
-        if (!currentPagination.hasMore || !currentPagination.nextCursor) {
-          return;
-        }
-
         const url =
           tab === "my-gallery"
             ? `${currentUrl.origin}/api/images?pageSize=50&cursor=${currentPagination.nextCursor}`
             : `${currentUrl.origin}/api/images/public?pageSize=50&cursor=${currentPagination.nextCursor}`;
 
+        console.log("Fetching from URL:", url);
         const response = await fetch(url);
         const data: ApiResponse = await response.json();
+        console.log("Received data:", data);
 
         if (tab === "my-gallery") {
           setImages((prev) => [...prev, ...data.images]);
@@ -157,36 +168,54 @@ export default function ImageListing() {
   useEffect(() => {
     const currentPagination = getCurrentPagination();
 
+    console.log("Setting up intersection observer for tab:", activeTab);
+    console.log("Current pagination:", currentPagination);
+
     if (!currentPagination.hasMore || isLoadingMore) {
+      console.log(
+        "Skipping observer setup - no more images or already loading"
+      );
       return;
+    }
+
+    // Cleanup previous observer
+    if (observerRef.current) {
+      observerRef.current.disconnect();
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const [entry] = entries;
-        if (
-          entry.isIntersecting &&
-          !isLoadingMore &&
-          currentPagination.hasMore
-        ) {
-          loadMoreImages(activeTab);
-        }
+        entries.forEach((entry) => {
+          console.log("Intersection observed:", entry.isIntersecting);
+          if (
+            entry.isIntersecting &&
+            !isLoadingMore &&
+            getCurrentPagination().hasMore
+          ) {
+            console.log("Triggering auto load more for tab:", activeTab);
+            loadMoreImages(activeTab);
+          }
+        });
       },
       {
         root: null,
-        rootMargin: "100px", // Start loading 100px before reaching the bottom
+        rootMargin: "200px", // Increased margin for earlier triggering
         threshold: 0.1,
       }
     );
 
     if (loadMoreRef.current) {
+      console.log("Observing load more ref");
       observer.observe(loadMoreRef.current);
+    } else {
+      console.log("Load more ref not found");
     }
 
     observerRef.current = observer;
 
     return () => {
       if (observerRef.current) {
+        console.log("Cleaning up observer");
         observerRef.current.disconnect();
       }
     };
@@ -201,6 +230,7 @@ export default function ImageListing() {
   // Cleanup observer when tab changes
   useEffect(() => {
     if (observerRef.current) {
+      console.log("Tab changed, disconnecting observer");
       observerRef.current.disconnect();
     }
   }, [activeTab]);
@@ -496,20 +526,44 @@ export default function ImageListing() {
                 ))}
               </div>
 
-              {/* Auto Load More Trigger */}
+              {/* Load More Section */}
               {getCurrentPagination().hasMore && (
-                <div
-                  ref={loadMoreRef}
-                  className="flex justify-center items-center py-8"
-                >
-                  {isLoadingMore && (
-                    <div className="flex items-center gap-3 text-gray-600">
-                      <Loader2 className="h-6 w-6 animate-spin" />
-                      <span className="text-sm font-medium">
-                        Loading more images...
-                      </span>
-                    </div>
-                  )}
+                <div className="mt-8">
+                  {/* Auto Load More Trigger */}
+                  <div
+                    ref={loadMoreRef}
+                    className="flex justify-center items-center py-4"
+                  >
+                    {isLoadingMore && (
+                      <div className="flex items-center gap-3 text-gray-600">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <span className="text-sm font-medium">
+                          Loading more images...
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Manual Load More Button */}
+                  <div className="text-center mt-4">
+                    <Button
+                      onClick={() => loadMoreImages(activeTab)}
+                      disabled={isLoadingMore}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl px-8 py-3 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isLoadingMore ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Loading more...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-5 w-5" />
+                          Load More Images
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               )}
 
