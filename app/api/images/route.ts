@@ -12,28 +12,19 @@ export async function GET(request: NextRequest) {
     const context = getRequestContext();
     const { BUCKET, PUBLIC_R2_URL } = context.env;
 
-    // List only user's images
+    // Get pagination parameters from URL
+    const url = new URL(request.url);
+    const pageSize = parseInt(url.searchParams.get("pageSize") || "50");
+    const cursor = url.searchParams.get("cursor") || undefined;
+
+    // List user's images with pagination
     const options = {
-      limit: 500,
+      limit: pageSize,
       prefix: `${user.email}/`,
+      cursor: cursor,
     };
 
     const listed = await BUCKET.list(options);
-    let truncated = listed.truncated;
-    // @ts-ignore
-    let cursor = truncated ? listed.cursor : undefined;
-
-    while (truncated) {
-      const next = await BUCKET.list({
-        ...options,
-        cursor: cursor,
-      });
-      listed.objects.push(...next.objects);
-
-      truncated = next.truncated;
-      // @ts-ignore
-      cursor = next.cursor;
-    }
 
     // Get metadata for each image
     const images = await Promise.all(
@@ -54,12 +45,24 @@ export async function GET(request: NextRequest) {
             size: object.size,
             uploaded: object.uploaded,
             metadata: {},
+            publicURL: `${PUBLIC_R2_URL}/${object.key}`,
           };
         }
       })
     );
 
-    return new Response(JSON.stringify(images), {
+    // Return paginated response
+    const response = {
+      images,
+      pagination: {
+        hasMore: listed.truncated,
+        nextCursor: listed.truncated ? listed.cursor : undefined,
+        pageSize,
+        currentPage: cursor ? 2 : 1, // Simple page tracking
+      },
+    };
+
+    return new Response(JSON.stringify(response), {
       headers: {
         "Content-Type": "application/json",
       },

@@ -8,12 +8,22 @@ export async function GET(request: NextRequest) {
     const context = getRequestContext();
     const { BUCKET, PUBLIC_R2_URL } = context.env;
 
-    // List all objects in the bucket
-    const objects = await BUCKET.list();
+    // Get pagination parameters from URL
+    const url = new URL(request.url);
+    const pageSize = parseInt(url.searchParams.get("pageSize") || "50");
+    const cursor = url.searchParams.get("cursor") || undefined;
+
+    // List all objects in the bucket with pagination
+    const options = {
+      limit: pageSize,
+      cursor: cursor,
+    };
+
+    const listed = await BUCKET.list(options);
 
     // Filter for image files and extract metadata
     const images = await Promise.all(
-      objects.objects
+      listed.objects
         .filter(
           (obj) =>
             obj.key.endsWith(".jpeg") ||
@@ -36,6 +46,7 @@ export async function GET(request: NextRequest) {
               key: obj.key,
               uploaded: obj.uploaded.toISOString(),
               metadata: {},
+              publicURL: `${PUBLIC_R2_URL}/${obj.key}`,
             };
           }
         })
@@ -46,7 +57,18 @@ export async function GET(request: NextRequest) {
       (a, b) => new Date(b.uploaded).getTime() - new Date(a.uploaded).getTime()
     );
 
-    return new Response(JSON.stringify(images), {
+    // Return paginated response
+    const response = {
+      images,
+      pagination: {
+        hasMore: listed.truncated,
+        nextCursor: listed.truncated ? listed.cursor : undefined,
+        pageSize,
+        currentPage: cursor ? 2 : 1, // Simple page tracking
+      },
+    };
+
+    return new Response(JSON.stringify(response), {
       headers: {
         "Content-Type": "application/json",
       },

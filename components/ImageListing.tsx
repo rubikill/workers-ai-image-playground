@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/ui/footer";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
   ArrowLeft,
   Image as ImageIcon,
@@ -21,6 +21,7 @@ import {
   ExternalLink,
   Users,
   Lock,
+  Loader2,
 } from "lucide-react";
 
 type R2Image = {
@@ -35,6 +36,18 @@ type R2Image = {
   };
 };
 
+type PaginationData = {
+  hasMore: boolean;
+  nextCursor?: string;
+  pageSize: number;
+  currentPage: number;
+};
+
+type ApiResponse = {
+  images: R2Image[];
+  pagination: PaginationData;
+};
+
 const imageLoader = ({ src }: { src: string }) => {
   return src;
 };
@@ -43,6 +56,7 @@ export default function ImageListing() {
   const [images, setImages] = useState<R2Image[]>([]);
   const [publicImages, setPublicImages] = useState<R2Image[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [selectedImage, setSelectedImage] = useState<R2Image | null>(null);
   const [promptPopup, setPromptPopup] = useState<{
     image: R2Image;
@@ -53,22 +67,44 @@ export default function ImageListing() {
     "my-gallery"
   );
 
+  // Pagination state for each tab
+  const [privatePagination, setPrivatePagination] = useState<PaginationData>({
+    hasMore: true,
+    nextCursor: undefined,
+    pageSize: 50,
+    currentPage: 1,
+  });
+  const [publicPagination, setPublicPagination] = useState<PaginationData>({
+    hasMore: true,
+    nextCursor: undefined,
+    pageSize: 50,
+    currentPage: 1,
+  });
+
+  // Auto load more refs
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
   useEffect(() => {
     const fetchImages = async () => {
       try {
         const currentUrl = new URL(window.location.href);
 
         // Fetch user's private images
-        const privateData = await fetch(`${currentUrl.origin}/api/images`);
-        const privateImageData = await privateData.json<R2Image[]>();
-        setImages(privateImageData);
+        const privateData = await fetch(
+          `${currentUrl.origin}/api/images?pageSize=50`
+        );
+        const privateResponse: ApiResponse = await privateData.json();
+        setImages(privateResponse.images);
+        setPrivatePagination(privateResponse.pagination);
 
         // Fetch public images (all images from all users)
         const publicData = await fetch(
-          `${currentUrl.origin}/api/images/public`
+          `${currentUrl.origin}/api/images/public?pageSize=50`
         );
-        const publicImageData = await publicData.json<R2Image[]>();
-        setPublicImages(publicImageData);
+        const publicResponse: ApiResponse = await publicData.json();
+        setPublicImages(publicResponse.images);
+        setPublicPagination(publicResponse.pagination);
       } catch (error) {
         console.error("Error fetching images:", error);
       } finally {
@@ -78,6 +114,96 @@ export default function ImageListing() {
 
     fetchImages();
   }, []);
+
+  const loadMoreImages = useCallback(
+    async (tab: "my-gallery" | "public-gallery") => {
+      if (isLoadingMore) return;
+
+      setIsLoadingMore(true);
+      try {
+        const currentUrl = new URL(window.location.href);
+        const currentPagination =
+          tab === "my-gallery" ? privatePagination : publicPagination;
+
+        if (!currentPagination.hasMore || !currentPagination.nextCursor) {
+          return;
+        }
+
+        const url =
+          tab === "my-gallery"
+            ? `${currentUrl.origin}/api/images?pageSize=50&cursor=${currentPagination.nextCursor}`
+            : `${currentUrl.origin}/api/images/public?pageSize=50&cursor=${currentPagination.nextCursor}`;
+
+        const response = await fetch(url);
+        const data: ApiResponse = await response.json();
+
+        if (tab === "my-gallery") {
+          setImages((prev) => [...prev, ...data.images]);
+          setPrivatePagination(data.pagination);
+        } else {
+          setPublicImages((prev) => [...prev, ...data.images]);
+          setPublicPagination(data.pagination);
+        }
+      } catch (error) {
+        console.error("Error loading more images:", error);
+      } finally {
+        setIsLoadingMore(false);
+      }
+    },
+    [isLoadingMore, privatePagination, publicPagination]
+  );
+
+  // Setup intersection observer for auto load more
+  useEffect(() => {
+    const currentPagination = getCurrentPagination();
+
+    if (!currentPagination.hasMore || isLoadingMore) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (
+          entry.isIntersecting &&
+          !isLoadingMore &&
+          currentPagination.hasMore
+        ) {
+          loadMoreImages(activeTab);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "100px", // Start loading 100px before reaching the bottom
+        threshold: 0.1,
+      }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    observerRef.current = observer;
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [
+    activeTab,
+    isLoadingMore,
+    privatePagination.hasMore,
+    publicPagination.hasMore,
+    loadMoreImages,
+  ]);
+
+  // Cleanup observer when tab changes
+  useEffect(() => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+  }, [activeTab]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -159,6 +285,10 @@ export default function ImageListing() {
     return activeTab === "my-gallery" ? images.length : publicImages.length;
   };
 
+  const getCurrentPagination = () => {
+    return activeTab === "my-gallery" ? privatePagination : publicPagination;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="container mx-auto px-4 py-8">
@@ -185,9 +315,6 @@ export default function ImageListing() {
                 >
                   <Lock className="h-4 w-4" />
                   My Gallery
-                  <span className="bg-white bg-opacity-20 text-xs px-2 py-1 rounded-full">
-                    {images.length}
-                  </span>
                 </button>
                 <button
                   onClick={() => setActiveTab("public-gallery")}
@@ -199,9 +326,6 @@ export default function ImageListing() {
                 >
                   <Users className="h-4 w-4" />
                   Public Gallery
-                  <span className="bg-white bg-opacity-20 text-xs px-2 py-1 rounded-full">
-                    {publicImages.length}
-                  </span>
                 </button>
               </div>
             </div>
@@ -372,7 +496,24 @@ export default function ImageListing() {
                 ))}
               </div>
 
-              {/* Load More or Create More */}
+              {/* Auto Load More Trigger */}
+              {getCurrentPagination().hasMore && (
+                <div
+                  ref={loadMoreRef}
+                  className="flex justify-center items-center py-8"
+                >
+                  {isLoadingMore && (
+                    <div className="flex items-center gap-3 text-gray-600">
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                      <span className="text-sm font-medium">
+                        Loading more images...
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Create More Section */}
               <div className="text-center mt-12">
                 <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
                   <Sparkles className="h-12 w-12 text-blue-600 mx-auto mb-4" />
