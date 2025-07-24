@@ -18,7 +18,7 @@ export function Header({ className }: HeaderProps) {
         >
           {/* AMA Logo */}
           <Image
-            src="https://pub-5d0c8d4a7da040d69056497477235539.r2.dev/ama-logo-main.png"
+            src="/ama-logo-main.png"
             alt="AMA"
             width={120}
             height={40}

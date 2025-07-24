@@ -22,6 +22,7 @@ import {
   FileImage,
 } from "lucide-react";
 import Link from "next/link";
+import { Footer } from "./ui/footer";
 
 type Model = {
   id: string;
@@ -208,6 +209,8 @@ export default function SimpleImageGenerator() {
     async (e: React.FormEvent) => {
       e.preventDefault();
       setIsLoading(true);
+
+      console.log("inputValues: ", inputValues);
       try {
         const response = await fetch("/api/generate_image", {
           method: "POST",
@@ -550,25 +553,7 @@ export default function SimpleImageGenerator() {
       </div>
 
       {/* Footer */}
-      <div className="text-center mt-12 text-sm text-gray-500">
-        <p>
-          Powered by{" "}
-          <a
-            href="https://developers.cloudflare.com/workers-ai"
-            className="text-blue-600 hover:underline"
-          >
-            Cloudflare Workers AI
-          </a>
-          . Source code available on{" "}
-          <a
-            href="https://github.com/kristianfreeman/workers-ai-image-playground"
-            className="text-blue-600 hover:underline"
-          >
-            GitHub
-          </a>
-          .
-        </p>
-      </div>
+      <Footer variant="minimal" className="mt-12" />
     </div>
   );
 }

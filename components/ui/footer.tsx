@@ -14,7 +14,7 @@ export function Footer({ variant = "default", className }: FooterProps) {
           {/* Amanotes Logo */}
           <div className="flex items-center justify-center mb-4">
             <Image
-              src="https://pub-5d0c8d4a7da040d69056497477235539.r2.dev/amanotes-logo.png"
+              src="/amanotes-logo.png"
               alt="Amanotes"
               width={120}
               height={40}
