@@ -132,7 +132,6 @@ export async function POST(request: NextRequest) {
         generatedAt: Date.now(),
         userEmail: user.email,
         prompt: input.prompt,
-        ...processResult.data!.metadata,
       },
     };
 
